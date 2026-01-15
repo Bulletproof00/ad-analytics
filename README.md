@@ -1,90 +1,93 @@
-# AdRadar
+# AdRadar OS Pro
 
-AdRadar ist ein datengetriebenes Marktgedächtnis für Meta-Ads (Facebook/Instagram) in Deutschland. Es sammelt über die offizielle Meta Ad Library API Beobachtungsdaten zu Ads, Hooks, Offers und Funnel-Strukturen, um eine heuristische Erfolgswahrscheinlichkeit abzuleiten – ohne echte Performance-KPIs wie CPL/ROAS.
+AdRadar OS Pro ist ein datengetriebenes Operating System für profitable Meta-Leadgenerierung in Deutschland (DE). Es sammelt Markt-Ads aus der offiziellen Meta Ad Library API, extrahiert Features, berechnet erklärbare Proxy-Scores und liefert ein starkes Analytics-Dashboard mit Agenten, Test-Queue und Autopilot-Export (Human-in-the-loop).
 
-## Warum AdRadar?
+## Phasen-Überblick
 
-Grundprinzip: Schlechte Ads werden abgeschaltet. Gute Ads laufen länger, werden variiert, repliziert und über mehrere Pages hinweg wiederverwendet. AdRadar misst dieses Verhalten systematisch und macht daraus verwertbare Signale.
+1. **Market Memory**: Ads ingest, Features extrahieren, Scores, Hook Library, Scan-Coverage.
+2. **Deep Analytics**: Zeitachsen, Copy Analytics, Funnel Trends, Sättigung, Korrelationen.
+3. **KI-Agenten (rules-first)**: Muster, Hook-Varianten, Winner Prediction, Budget/Strategy, Explainability.
+4. **Own KPI Integration**: CSV Import + Calibration (Proxy Score ↔ CPL-Bänder).
+5. **Autopilot Export**: Kampagnenpakete mit Freigabe, kein Live-Publishing.
 
-**Was AdRadar beantwortet:**
-1. Welche Ads laufen lange (Laufzeit als Erfolgssignal)?
-2. Welche Ads werden in Varianten getestet (Winner-Optimization Signale)?
-3. Welche Hooks/Offers tauchen seitenübergreifend auf (Marktvalidierung)?
-4. Welche Funnel-Typen dominieren (WhatsApp vs Instant Form vs Landingpage)?
-5. Welche emotionalen Trigger dominieren (Kosten-Schock, Angst, Fürsorge, Erleichterung)?
+## Grenzen (Compliance)
 
-## Limitations
-
-- Keine echten KPIs (CPL/ROAS/Spend) für normale Ads.
-- Abdeckung ist nicht 100% garantiert; die Meta API ist keyword-basiert.
-- Deep Crawl über Page-Filter ist eingeschränkt (falls der Parameter nicht verfügbar ist, nutzt das System breite Keyword-Cluster).
+- **Kein Scraping**: Nur offizielle Meta Ad Library API.
+- **Keine fremden KPIs**: CPL/ROAS werden nicht geschätzt.
+- **Erklärbarkeit**: Jede Empfehlung trägt Evidence (ad_ids, hook_hash, deltas).
+- **Human-in-the-loop**: Autopilot liefert nur Exportpakete.
 
 ## Setup
 
-1. `.env.example` kopieren:
-   ```bash
-   cp .env.example .env
-   ```
-2. `META_ACCESS_TOKEN` in `.env` setzen.
-3. Start:
-   ```bash
-   docker compose up --build
-   ```
-4. UI öffnen: `http://localhost:3000`
+```bash
+cp .env.example .env
+# META_ACCESS_TOKEN setzen
 
-## Example Keyword Sets (Tierkrankenversicherung DE)
-
-```
-tierkrankenversicherung
-hundekrankenversicherung
-katzenkrankenversicherung
-op versicherung hund
-op versicherung katze
-tierarzt kosten
-hund op kosten
-katze op kosten
-tierarzt rechnung
-vierbeiner schutz
-ohne wartezeit tier
-ab 20 € tierkrankenversicherung
+docker compose up --build
 ```
 
-## Score-Logik (transparent & deterministic)
+UI: `http://localhost:3000`
 
-- Runtime: `score_runtime = min(100, runtime_days * 4)`
-- Variants: `score_variants = min(100, variants_count * 20)`
-- Reuse: `score_reuse = min(100, reuse_count * 25)`
-- Funnel Fit: whatsapp=80, instant_form=70, landing_page=75, unknown=40
-- Gesamt: `0.4*runtime + 0.3*variants + 0.2*reuse + 0.1*funnel_fit`
+## Erste Schritte
 
-Die Erklärung wird im API-Response als `score.explanation` gespeichert.
+1. Öffne **/settings** und prüfe Keyword-Presets.
+2. Starte **/scan** mit dem Preset für Tierkrankenversicherung.
+3. Öffne **/dashboard** und prüfe KPIs, Trends, Alerts.
+4. Nutze **/ads** für Filter/Drilldowns, **/hooks** für Hook Library.
 
-## How to use outputs to build campaigns
+## Keyword Preset (Tierkrankenversicherung DE)
 
-- **Hook Library**: wiederkehrende Einstiege als Inspiration für neue Hooks.
-- **Top Winners**: bieten Einblick in Offers, Funnel-Typen und Emotional Triggers.
-- **Ad Detail**: Score-Breakdown für Kopie, Hook und Funnel-Einschätzung.
+- tierkrankenversicherung
+- hundekrankenversicherung
+- katzenkrankenversicherung
+- op versicherung hund
+- op versicherung katze
+- tierarzt kosten
+- hund op kosten
+- katze op kosten
+- tierarzt rechnung
+- vierbeiner schutz
+- ohne wartezeit tier
+- ab 20 € tierkrankenversicherung
 
-## API Overview (MVP)
+## Score-Logik
 
-- `POST /api/scan` startet Keyword-Cluster-Scans.
-- `GET /api/scan/{scan_id}` zeigt Progress + Errors.
-- `GET /api/ads` liefert Filter + Pagination.
-- `GET /api/ads/{id}` zeigt Ad-Detail + Score.
-- `POST /api/ads/{id}/tags` speichert manuelle Overrides.
-- `GET /api/hooks` liefert Hook-Library.
-- `GET /api/stats` liefert KPI Overview.
+```
+score_total = 0.4*runtime + 0.3*variants + 0.2*reuse + 0.1*funnel_fit
+runtime = min(100, runtime_days*4)
+variants = min(100, variants_count*20)
+reuse = min(100, reuse_count*25)
+funnel_fit = whatsapp 80 | instant_form 70 | landing_page 75 | unknown 40
+```
 
-## Meta API Fields
+Zusätzlich wird ein **saturation_index** berechnet (Hook-Reuse + Wachstumsrate der Pages in den letzten 14 Tagen). Dieser Index wirkt sich auf Empfehlungen aus, nicht auf `score_total`.
 
-Das System fragt defensive Felder an; nicht vorhandene Felder werden als `None` gespeichert. Unterstützte Felder:
-- `ad_archive_id`, `page_id`, `page_name`
-- `ad_delivery_start_time`, `ad_delivery_stop_time`
-- `ad_snapshot_url`
-- `ad_creative_bodies`, `ad_creative_link_titles`, `ad_creative_link_descriptions`, `ad_creative_link_captions`
-- `publisher_platforms`, `platforms`, `languages`
+## Dashboard-Guide
 
-## Struktur
+- **Command Center**: KPI-Karten + Trendpanel + Alerts.
+- **Ads Explorer**: filterbar nach Score, Runtime, Reuse, Variants, Emotion, Funnel.
+- **Hook Library**: Hooks nach Reuse, Beispiele, Copy-Buttons.
+- **Analytics Hub**: Zeitreihen & Marktverlauf.
+- **Agents**: Rules-first Reports, optional LLM für Textvarianten.
+- **Test Queue**: Kandidaten für Microtests.
+- **Export**: Campaign-Bundle als JSON/Markdown.
+
+## Agents (rules-first)
+
+Agenten liefern strukturierte, erklärbare Outputs und speichern Runs:
+- Market Pattern
+- Hook Generator
+- Winner Prediction
+- Strategy & Budget
+- Explainability
+- Market Saturation
+- Differentiation
+
+## CSV KPI Import (Phase 4 MVP)
+
+`POST /api/kpi/import` akzeptiert CSV + Mapping. Ergebnisse werden in `own_campaigns` gespeichert.
+
+## Architektur
 
 ```
 backend/
@@ -99,3 +102,18 @@ frontend/
   components/
   lib/
 ```
+
+## Meta API Felder
+
+Das System fragt defensive Felder an; missing fields werden als `None` gespeichert:
+- ad_archive_id, page_id, page_name
+- ad_delivery_start_time, ad_delivery_stop_time
+- ad_snapshot_url
+- ad_creative_bodies, ad_creative_link_titles, ad_creative_link_descriptions, ad_creative_link_captions
+- publisher_platforms, platforms, languages
+
+## Roadmap
+
+- Meta Insights API für eigene KPIs (optional)
+- Advanced Cohort Analytics + Survival Curves
+- UI Vergleichsmodi für Hooks & Funnels

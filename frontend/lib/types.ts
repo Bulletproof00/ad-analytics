@@ -1,6 +1,8 @@
 export interface AdListItem {
   id: string;
   score_total: number;
+  score_reuse?: number;
+  score_variants?: number;
   page_name: string | null;
   start_time: string | null;
   stop_time: string | null;
@@ -52,9 +54,11 @@ export interface AdDetail {
     score_variants: number;
     score_reuse: number;
     score_funnel_fit: number;
+    saturation_index?: number;
     explanation: Record<string, any>;
   };
   hook: string | null;
   reuse_count: number;
   variants_count: number;
+  features?: Record<string, any>;
 }

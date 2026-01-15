@@ -2,8 +2,9 @@ from datetime import datetime
 from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from app.db.models import Ad, Advertiser, AdSnapshot, Tag
+from app.db.models import Ad, Advertiser, AdSnapshot, Tag, Feature
 from app.services.funnel_detector import detect_all
+from app.services.feature_extractor import extract_features
 
 
 def _parse_datetime(value: str | None) -> datetime | None:
@@ -88,5 +89,13 @@ def upsert_ad(db: Session, payload: dict[str, Any]) -> Ad:
             emotion_trigger=auto_tags["emotion_trigger"],
             updated_at=now,
         )
+
+    features_data = extract_features(ad.copy_bodies)
+    if ad.features:
+        for key, value in features_data.items():
+            setattr(ad.features, key, value)
+        ad.features.updated_at = now
+    else:
+        ad.features = Feature(ad_id=ad.id, updated_at=now, **features_data)
 
     return ad

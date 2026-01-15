@@ -59,6 +59,7 @@ export default function AdDetailPage({ params }: { params: { id: string } }) {
           <li>Variants: {ad.score.score_variants}</li>
           <li>Reuse: {ad.score.score_reuse}</li>
           <li>Funnel Fit: {ad.score.score_funnel_fit}</li>
+          <li>Saturation Index: {ad.score.saturation_index ?? 0}</li>
         </ul>
         <pre>{JSON.stringify(ad.score.explanation, null, 2)}</pre>
       </div>
@@ -106,6 +107,10 @@ export default function AdDetailPage({ params }: { params: { id: string } }) {
         <button className="button" style={{ marginTop: 12 }} onClick={saveTags} disabled={saving}>
           {saving ? 'Speichern...' : 'Speichern'}
         </button>
+      </div>
+      <div className="card">
+        <h2>Copy Analytics</h2>
+        <pre>{JSON.stringify(ad.features || {}, null, 2)}</pre>
       </div>
     </div>
   );

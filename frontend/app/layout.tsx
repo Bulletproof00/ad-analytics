@@ -18,6 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/scan">Scan</Link>
               <Link href="/ads">Ads</Link>
               <Link href="/hooks">Hooks</Link>
+              <Link href="/funnels">Funnels</Link>
+              <Link href="/analytics">Analytics</Link>
+              <Link href="/agents">Agents</Link>
+              <Link href="/test-queue">Test Queue</Link>
+              <Link href="/export">Export</Link>
+              <Link href="/integrations">Integrations</Link>
+              <Link href="/settings">Settings</Link>
             </nav>
           </div>
         </header>

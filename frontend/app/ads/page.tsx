@@ -13,6 +13,9 @@ export default function AdsPage() {
   const [offerType, setOfferType] = useState('');
   const [emotionTrigger, setEmotionTrigger] = useState('');
   const [niche, setNiche] = useState('');
+  const [minRuntime, setMinRuntime] = useState(0);
+  const [minReuse, setMinReuse] = useState(0);
+  const [minVariants, setMinVariants] = useState(0);
 
   const load = async () => {
     const params = new URLSearchParams();
@@ -23,6 +26,9 @@ export default function AdsPage() {
     if (offerType) params.set('offer_type', offerType);
     if (emotionTrigger) params.set('emotion_trigger', emotionTrigger);
     if (niche) params.set('niche', niche);
+    if (minRuntime) params.set('min_runtime', String(minRuntime));
+    if (minReuse) params.set('min_reuse', String(minReuse));
+    if (minVariants) params.set('min_variants', String(minVariants));
 
     const res = await fetch(`/api/backend/api/ads?${params.toString()}`, { cache: 'no-store' });
     const data = await res.json();
@@ -79,6 +85,30 @@ export default function AdsPage() {
             <option value="rs">RS</option>
             <option value="unknown">Unknown</option>
           </select>
+          <input
+            className="input"
+            type="number"
+            min={0}
+            placeholder="Min Runtime (days)"
+            value={minRuntime}
+            onChange={(e) => setMinRuntime(Number(e.target.value))}
+          />
+          <input
+            className="input"
+            type="number"
+            min={0}
+            placeholder="Min Reuse"
+            value={minReuse}
+            onChange={(e) => setMinReuse(Number(e.target.value))}
+          />
+          <input
+            className="input"
+            type="number"
+            min={0}
+            placeholder="Min Variants"
+            value={minVariants}
+            onChange={(e) => setMinVariants(Number(e.target.value))}
+          />
           <label>
             <input type="checkbox" checked={winnerOnly} onChange={(e) => setWinnerOnly(e.target.checked)} /> Winner only
           </label>
@@ -97,6 +127,8 @@ export default function AdsPage() {
               <th>Hook</th>
               <th>Funnel</th>
               <th>Offer</th>
+              <th>Reuse</th>
+              <th>Variants</th>
               <th>Snapshot</th>
               <th>Open</th>
             </tr>
@@ -111,6 +143,8 @@ export default function AdsPage() {
                 <td>{item.hook_preview}</td>
                 <td>{item.funnel_type}</td>
                 <td>{item.offer_type}</td>
+                <td>{item.score_reuse ?? '-'}</td>
+                <td>{item.score_variants ?? '-'}</td>
                 <td>
                   {item.snapshot_url ? (
                     <a href={item.snapshot_url} target="_blank" rel="noreferrer">Link</a>

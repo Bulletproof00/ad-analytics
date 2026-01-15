@@ -7,6 +7,7 @@ import { HookItem } from '../../lib/types';
 
 export default function HooksPage() {
   const [hooks, setHooks] = useState<HookItem[]>([]);
+  const [compare, setCompare] = useState<string[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -17,9 +18,27 @@ export default function HooksPage() {
     load();
   }, []);
 
+  const toggleCompare = (id: string) => {
+    setCompare((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  };
+
+  const compareHooks = hooks.filter((hook) => compare.includes(hook.id));
+
   return (
     <div className="grid">
       <h1>Hooks</h1>
+      {compareHooks.length > 0 && (
+        <div className="card">
+          <h2>Compare Hooks</h2>
+          <ul>
+            {compareHooks.map((hook) => (
+              <li key={hook.id}>
+                <strong>{hook.hook_text}</strong> — reuse {hook.reuse_count}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="card">
         <table className="table">
           <thead>
@@ -28,6 +47,7 @@ export default function HooksPage() {
               <th>Reuse</th>
               <th>Beispiele</th>
               <th>Copy</th>
+              <th>Compare</th>
             </tr>
           </thead>
           <tbody>
@@ -44,6 +64,9 @@ export default function HooksPage() {
                 </td>
                 <td>
                   <CopyButton text={hook.hook_text} />
+                </td>
+                <td>
+                  <input type="checkbox" checked={compare.includes(hook.id)} onChange={() => toggleCompare(hook.id)} />
                 </td>
               </tr>
             ))}

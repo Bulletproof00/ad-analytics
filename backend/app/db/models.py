@@ -55,6 +55,7 @@ class Ad(Base):
     snapshots = relationship("AdSnapshot", back_populates="ad")
     tags = relationship("Tag", back_populates="ad", uselist=False)
     score = relationship("Score", back_populates="ad", uselist=False)
+    features = relationship("Feature", back_populates="ad", uselist=False)
 
 
 class AdSnapshot(Base):
@@ -93,6 +94,7 @@ class Score(Base):
     score_variants: Mapped[int] = mapped_column(Integer, default=0)
     score_reuse: Mapped[int] = mapped_column(Integer, default=0)
     score_funnel_fit: Mapped[int] = mapped_column(Integer, default=0)
+    saturation_index: Mapped[int] = mapped_column(Integer, default=0)
     explanation: Mapped[dict | None] = mapped_column(_json_type())
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -107,5 +109,120 @@ class HookLibrary(Base):
     hook_hash: Mapped[str] = mapped_column(String, unique=True, index=True)
     reuse_count: Mapped[int] = mapped_column(Integer, default=0)
     example_ad_ids: Mapped[dict | None] = mapped_column(_json_type())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ScanRun(Base):
+    __tablename__ = "scan_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    state: Mapped[str] = mapped_column(String, default="running")
+    payload: Mapped[dict | None] = mapped_column(_json_type())
+    summary: Mapped[dict | None] = mapped_column(_json_type())
+    errors: Mapped[dict | None] = mapped_column(_json_type())
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    keywords = relationship("ScanKeyword", back_populates="scan_run")
+
+
+class ScanKeyword(Base):
+    __tablename__ = "scan_keywords"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    scan_run_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("scan_runs.id"))
+    keyword: Mapped[str] = mapped_column(String)
+    fetched_count: Mapped[int] = mapped_column(Integer, default=0)
+    upserted_count: Mapped[int] = mapped_column(Integer, default=0)
+    unique_pages: Mapped[int] = mapped_column(Integer, default=0)
+    runtime_ms: Mapped[int] = mapped_column(Integer, default=0)
+
+    scan_run = relationship("ScanRun", back_populates="keywords")
+
+
+class Feature(Base):
+    __tablename__ = "features"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    ad_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("ads.id"), unique=True)
+    hook_text: Mapped[str | None] = mapped_column(Text)
+    hook_hash: Mapped[str | None] = mapped_column(String, index=True)
+    offer_type: Mapped[str | None] = mapped_column(String)
+    emotion_trigger: Mapped[str | None] = mapped_column(String)
+    funnel_type: Mapped[str | None] = mapped_column(String)
+    creative_type: Mapped[str | None] = mapped_column(String, default="unknown")
+    copy_metrics: Mapped[dict | None] = mapped_column(_json_type())
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    ad = relationship("Ad", back_populates="features")
+
+
+class AgentRun(Base):
+    __tablename__ = "agent_runs"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    agent_name: Mapped[str] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String, default="completed")
+    input: Mapped[dict | None] = mapped_column(_json_type())
+    output: Mapped[dict | None] = mapped_column(_json_type())
+    evidence: Mapped[dict | None] = mapped_column(_json_type())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class OwnCampaign(Base):
+    __tablename__ = "own_campaigns"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String)
+    source: Mapped[str | None] = mapped_column(String, default="csv")
+    metrics: Mapped[dict | None] = mapped_column(_json_type())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class Setting(Base):
+    __tablename__ = "settings"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    scope: Mapped[str] = mapped_column(String, default="global")
+    key: Mapped[str] = mapped_column(String, index=True)
+    value: Mapped[dict | None] = mapped_column(_json_type())
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Alert(Base):
+    __tablename__ = "alerts"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    type: Mapped[str] = mapped_column(String)
+    severity: Mapped[str] = mapped_column(String)
+    title: Mapped[str] = mapped_column(String)
+    message: Mapped[str] = mapped_column(Text)
+    evidence: Mapped[dict | None] = mapped_column(_json_type())
+    status: Mapped[str] = mapped_column(String, default="open")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    event_name: Mapped[str] = mapped_column(String)
+    payload: Mapped[dict | None] = mapped_column(_json_type())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+
+
+class TestQueueItem(Base):
+    __tablename__ = "test_queue"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String, default="draft")
+    predicted_success: Mapped[int] = mapped_column(Integer, default=0)
+    risk_notes: Mapped[str | None] = mapped_column(Text)
+    recommended_budget: Mapped[int | None] = mapped_column(Integer)
+    kill_rules: Mapped[dict | None] = mapped_column(_json_type())
+    payload: Mapped[dict | None] = mapped_column(_json_type())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     max_results_per_keyword: int = 2000
     rate_limit_max_retries: int = 5
     rate_limit_base_sleep_ms: int = 500
+    redis_url: str = "redis://redis:6379/0"
+    llm_api_key: str | None = None
 
     class Config:
         env_prefix = ""
