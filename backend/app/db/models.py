@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, Float
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import JSON
@@ -226,3 +226,108 @@ class TestQueueItem(Base):
     payload: Mapped[dict | None] = mapped_column(_json_type())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Blueprint(Base):
+    __tablename__ = "blueprints"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    source_ad_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("ads.id"))
+    advertiser_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("advertisers.id"), nullable=True)
+    title: Mapped[str] = mapped_column(String)
+    industry: Mapped[str | None] = mapped_column(String, default="unknown")
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    ad = relationship("Ad")
+    creative = relationship("CreativeAnalysis", back_populates="blueprint", uselist=False)
+    funnel = relationship("FunnelAnalysis", back_populates="blueprint", uselist=False)
+    offer = relationship("OfferPsychology", back_populates="blueprint", uselist=False)
+    success = relationship("SuccessSignals", back_populates="blueprint", uselist=False)
+    snapshots = relationship("LandingSnapshot", back_populates="blueprint")
+
+
+class CreativeAnalysis(Base):
+    __tablename__ = "creative_analysis"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    blueprint_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("blueprints.id"))
+    creative_type: Mapped[str] = mapped_column(String, default="unknown")
+    style_type: Mapped[str] = mapped_column(String, default="unknown")
+    aspect_ratio: Mapped[str | None] = mapped_column(String)
+    duration_sec: Mapped[int | None] = mapped_column(Integer)
+    hook_type: Mapped[str] = mapped_column(String, default="unknown")
+    hook_window: Mapped[str] = mapped_column(String, default="unknown")
+    story_structure: Mapped[str] = mapped_column(String, default="unknown")
+    pov: Mapped[str] = mapped_column(String, default="unknown")
+    emotions: Mapped[dict | None] = mapped_column(_json_type())
+    cta_type: Mapped[str] = mapped_column(String, default="unknown")
+    cta_tone: Mapped[str] = mapped_column(String, default="unknown")
+    extracted_text: Mapped[str | None] = mapped_column(Text)
+    tags_json: Mapped[dict | None] = mapped_column(_json_type())
+
+    blueprint = relationship("Blueprint", back_populates="creative")
+
+
+class FunnelAnalysis(Base):
+    __tablename__ = "funnel_analysis"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    blueprint_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("blueprints.id"))
+    click_url: Mapped[str | None] = mapped_column(Text)
+    destination_type: Mapped[str] = mapped_column(String, default="unknown")
+    lead_fields_count: Mapped[int | None] = mapped_column(Integer)
+    lead_fields_json: Mapped[dict | None] = mapped_column(_json_type())
+    friction_level: Mapped[str] = mapped_column(String, default="unknown")
+    snapshot_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("landing_snapshots.id"), nullable=True)
+    trust_elements_json: Mapped[dict | None] = mapped_column(_json_type())
+
+    blueprint = relationship("Blueprint", back_populates="funnel")
+    snapshot = relationship("LandingSnapshot", foreign_keys=[snapshot_id])
+
+
+class LandingSnapshot(Base):
+    __tablename__ = "landing_snapshots"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    blueprint_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("blueprints.id"), nullable=True)
+    url: Mapped[str] = mapped_column(Text)
+    captured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
+    html_path: Mapped[str | None] = mapped_column(Text)
+    screenshot_path: Mapped[str | None] = mapped_column(Text)
+    title: Mapped[str | None] = mapped_column(String)
+    h1: Mapped[str | None] = mapped_column(String)
+    meta_description: Mapped[str | None] = mapped_column(Text)
+
+    blueprint = relationship("Blueprint", back_populates="snapshots")
+
+
+class OfferPsychology(Base):
+    __tablename__ = "offer_psychology"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    blueprint_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("blueprints.id"))
+    price_mentioned: Mapped[bool] = mapped_column(Boolean, default=False)
+    monthly_price_value: Mapped[float | None] = mapped_column(Float)
+    discount_or_bonus: Mapped[bool] = mapped_column(Boolean, default=False)
+    urgency: Mapped[bool] = mapped_column(Boolean, default=False)
+    comparison_frame: Mapped[bool] = mapped_column(Boolean, default=False)
+    primary_frame: Mapped[str] = mapped_column(String, default="unknown")
+    notes: Mapped[str | None] = mapped_column(Text)
+
+    blueprint = relationship("Blueprint", back_populates="offer")
+
+
+class SuccessSignals(Base):
+    __tablename__ = "success_signals"
+
+    id: Mapped[uuid.UUID] = mapped_column(_uuid_type(), primary_key=True, default=uuid.uuid4)
+    blueprint_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("blueprints.id"))
+    ad_run_days: Mapped[int | None] = mapped_column(Integer)
+    variant_count_est: Mapped[int | None] = mapped_column(Integer)
+    repetition_signal: Mapped[bool] = mapped_column(Boolean, default=False)
+    scaling_score: Mapped[int] = mapped_column(Integer, default=0)
+    scoring_breakdown_json: Mapped[dict | None] = mapped_column(_json_type())
+
+    blueprint = relationship("Blueprint", back_populates="success")

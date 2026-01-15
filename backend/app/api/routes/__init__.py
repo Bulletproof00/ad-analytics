@@ -9,6 +9,7 @@ from .funnels import router as funnels_router
 from .kpi import router as kpi_router
 from .export import router as export_router
 from .alerts import router as alerts_router
+from .blueprints import router as blueprints_router
 
 __all__ = [
     "scan_router",
@@ -22,4 +23,5 @@ __all__ = [
     "kpi_router",
     "export_router",
     "alerts_router",
+    "blueprints_router",
 ]

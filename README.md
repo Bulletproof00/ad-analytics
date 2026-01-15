@@ -71,6 +71,23 @@ Zusätzlich wird ein **saturation_index** berechnet (Hook-Reuse + Wachstumsrate 
 - **Agents**: Rules-first Reports, optional LLM für Textvarianten.
 - **Test Queue**: Kandidaten für Microtests.
 - **Export**: Campaign-Bundle als JSON/Markdown.
+- **Blueprints**: Campaign Blueprint Engine (CBE) mit Creative/Funnel/Offer Analysis.
+
+## Campaign Blueprint Engine (CBE)
+
+Die CBE erweitert AdRadar um wiederverwendbare Kampagnen-Blaupausen:
+- **Creative Analysis**: Hook, Story-Struktur, POV, CTA, Emotionen.
+- **Funnel Analysis**: Destination-Typ, Friction-Level, Snapshot (HTML).
+- **Offer & Psychology**: Preis, Bonus, Urgency, Framing.
+- **Success Signals**: Laufzeit, Varianten, Scaling-Score mit Breakdown.
+
+Snapshots sind **user-triggered** und werden mit SSRF-Schutz gespeichert. HTML wird lokal unter `/data/snapshots/` abgelegt.
+
+## MVP vs Next
+
+**MVP**: Rule-based Tagging, HTML-Snapshots, JSON/CSV Export, einfache Filter.
+
+**Next**: OCR/Screenshot, Hook-Cluster, Compare-Mode, Auto-Insights.
 
 ## Agents (rules-first)
 

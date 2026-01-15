@@ -19,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/ads">Ads</Link>
               <Link href="/hooks">Hooks</Link>
               <Link href="/funnels">Funnels</Link>
+              <Link href="/blueprints">Blueprints</Link>
               <Link href="/analytics">Analytics</Link>
               <Link href="/agents">Agents</Link>
               <Link href="/test-queue">Test Queue</Link>

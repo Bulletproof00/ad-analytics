@@ -8,6 +8,8 @@ export default function AdDetailPage({ params }: { params: { id: string } }) {
   const [ad, setAd] = useState<AdDetail | null>(null);
   const [saving, setSaving] = useState(false);
   const [tags, setTags] = useState<AdDetail['tags'] | null>(null);
+  const [blueprint, setBlueprint] = useState<any | null>(null);
+  const [blueprintLoading, setBlueprintLoading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -15,6 +17,9 @@ export default function AdDetailPage({ params }: { params: { id: string } }) {
       const data = await res.json();
       setAd(data);
       setTags(data.tags);
+      const bpRes = await fetch(`/api/backend/api/blueprints?source_ad_id=${params.id}`);
+      const bpData = await bpRes.json();
+      setBlueprint(bpData.items?.[0] || null);
     };
     load();
   }, [params.id]);
@@ -33,6 +38,43 @@ export default function AdDetailPage({ params }: { params: { id: string } }) {
       body: JSON.stringify(tags),
     });
     setSaving(false);
+  };
+
+  const createBlueprint = async () => {
+    setBlueprintLoading(true);
+    const res = await fetch('/api/backend/api/blueprints', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sourceAdId: params.id }),
+    });
+    const data = await res.json();
+    const bpRes = await fetch(`/api/backend/api/blueprints/${data.id}`);
+    const bpData = await bpRes.json();
+    setBlueprint(bpData);
+    setBlueprintLoading(false);
+  };
+
+  const saveBlueprintSection = async (section: string, payload: any) => {
+    if (!blueprint) return;
+    const endpoint = section ? `/api/backend/api/blueprints/${blueprint.id}/${section}` : `/api/backend/api/blueprints/${blueprint.id}`;
+    await fetch(endpoint, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const refreshed = await fetch(`/api/backend/api/blueprints/${blueprint.id}`);
+    setBlueprint(await refreshed.json());
+  };
+
+  const captureSnapshot = async () => {
+    if (!blueprint?.funnel?.click_url) return;
+    await fetch(`/api/backend/api/blueprints/${blueprint.id}/snapshot`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: blueprint.funnel.click_url }),
+    });
+    const refreshed = await fetch(`/api/backend/api/blueprints/${blueprint.id}`);
+    setBlueprint(await refreshed.json());
   };
 
   if (!ad || !tags) return <div className="card">Loading...</div>;
@@ -111,6 +153,86 @@ export default function AdDetailPage({ params }: { params: { id: string } }) {
       <div className="card">
         <h2>Copy Analytics</h2>
         <pre>{JSON.stringify(ad.features || {}, null, 2)}</pre>
+      </div>
+      <div className="card">
+        <h2>Campaign Blueprint</h2>
+        {!blueprint && (
+          <button className="button" onClick={createBlueprint} disabled={blueprintLoading}>
+            {blueprintLoading ? 'Creating...' : 'Create Blueprint'}
+          </button>
+        )}
+        {blueprint && (
+          <div className="grid">
+            <div>
+              <label>Industry</label>
+              <input
+                className="input"
+                defaultValue={blueprint.industry}
+                onBlur={(e) => saveBlueprintSection('', { industry: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>Hook Type</label>
+              <input
+                className="input"
+                defaultValue={blueprint.creative?.hook_type || 'unknown'}
+                onBlur={(e) => saveBlueprintSection('creative-analysis', { hook_type: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>CTA Type</label>
+              <input
+                className="input"
+                defaultValue={blueprint.creative?.cta_type || 'unknown'}
+                onBlur={(e) => saveBlueprintSection('creative-analysis', { cta_type: e.target.value })}
+              />
+            </div>
+          <div>
+            <label>Click URL</label>
+            <input
+              className="input"
+              defaultValue={blueprint.funnel?.click_url || ''}
+              onBlur={(e) => saveBlueprintSection('funnel-analysis', { click_url: e.target.value })}
+            />
+          </div>
+          <div>
+            <button
+              className="button secondary"
+              onClick={captureSnapshot}
+            >
+              Capture Snapshot
+            </button>
+          </div>
+            <div>
+              <label>Friction Level</label>
+              <select
+                className="select"
+                defaultValue={blueprint.funnel?.friction_level || 'unknown'}
+                onChange={(e) => saveBlueprintSection('funnel-analysis', { friction_level: e.target.value })}
+              >
+                <option value="low">low</option>
+                <option value="medium">medium</option>
+                <option value="high">high</option>
+                <option value="unknown">unknown</option>
+              </select>
+            </div>
+            <div>
+              <label>Primary Frame</label>
+              <input
+                className="input"
+                defaultValue={blueprint.offer?.primary_frame || 'unknown'}
+                onBlur={(e) => saveBlueprintSection('offer-psychology', { primary_frame: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>Scaling Score</label>
+              <p>{blueprint.success?.scaling_score ?? 0}</p>
+            </div>
+            <div>
+              <a href={`/api/backend/api/blueprints/${blueprint.id}/export.json`} target="_blank" rel="noreferrer">Export JSON</a>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

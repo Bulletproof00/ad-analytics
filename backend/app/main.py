@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.core.logging import configure_logging
-from app.api.routes import scan, ads, hooks, stats, analytics, settings, agents, funnels, kpi, export, alerts
+from app.api.routes import scan, ads, hooks, stats, analytics, settings, agents, funnels, kpi, export, alerts, blueprints
 
 
 def create_app() -> FastAPI:
@@ -17,6 +17,7 @@ def create_app() -> FastAPI:
     app.include_router(kpi.router)
     app.include_router(export.router)
     app.include_router(alerts.router)
+    app.include_router(blueprints.router)
     return app
 
 
