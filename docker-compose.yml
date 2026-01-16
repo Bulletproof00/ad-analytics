@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${DB_USER:-adradar}
+      POSTGRES_PASSWORD: ${DB_PASS:-adradar}
+      POSTGRES_DB: ${DB_NAME:-adradar}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-adradar}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    environment:
+      META_ACCESS_TOKEN: ${META_ACCESS_TOKEN}
+      META_API_VERSION: ${META_API_VERSION:-v24.0}
+      META_BASE_URL: ${META_BASE_URL:-https://graph.facebook.com}
+      DB_HOST: postgres
+      DB_USER: ${DB_USER:-adradar}
+      DB_PASS: ${DB_PASS:-adradar}
+      DB_NAME: ${DB_NAME:-adradar}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:-admin}
+      BASIC_AUTH_PASS: ${BASIC_AUTH_PASS:-admin}
+      DEFAULT_COUNTRY: ${DEFAULT_COUNTRY:-DE}
+      DEFAULT_SINCE_DAYS: ${DEFAULT_SINCE_DAYS:-90}
+      MAX_RESULTS_PER_KEYWORD: ${MAX_RESULTS_PER_KEYWORD:-2000}
+      RATE_LIMIT_MAX_RETRIES: ${RATE_LIMIT_MAX_RETRIES:-5}
+      RATE_LIMIT_BASE_SLEEP_MS: ${RATE_LIMIT_BASE_SLEEP_MS:-500}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8000:8000"
+
+  worker:
+    build: ./backend
+    command: ["celery", "-A", "app.worker.celery_app", "worker", "--loglevel=info"]
+    environment:
+      META_ACCESS_TOKEN: ${META_ACCESS_TOKEN}
+      META_API_VERSION: ${META_API_VERSION:-v24.0}
+      META_BASE_URL: ${META_BASE_URL:-https://graph.facebook.com}
+      DB_HOST: postgres
+      DB_USER: ${DB_USER:-adradar}
+      DB_PASS: ${DB_PASS:-adradar}
+      DB_NAME: ${DB_NAME:-adradar}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:-admin}
+      BASIC_AUTH_PASS: ${BASIC_AUTH_PASS:-admin}
+      DEFAULT_COUNTRY: ${DEFAULT_COUNTRY:-DE}
+      DEFAULT_SINCE_DAYS: ${DEFAULT_SINCE_DAYS:-90}
+      MAX_RESULTS_PER_KEYWORD: ${MAX_RESULTS_PER_KEYWORD:-2000}
+      RATE_LIMIT_MAX_RETRIES: ${RATE_LIMIT_MAX_RETRIES:-5}
+      RATE_LIMIT_BASE_SLEEP_MS: ${RATE_LIMIT_BASE_SLEEP_MS:-500}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_BASE_URL: http://backend:8000
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:-admin}
+      BASIC_AUTH_PASS: ${BASIC_AUTH_PASS:-admin}
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
