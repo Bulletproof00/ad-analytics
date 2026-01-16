@@ -22,13 +22,16 @@ export default function AnalyticsPage() {
 
   return (
     <div className="grid">
-      <h1>Analytics Hub</h1>
-      <div className="card">
-        <h2>Market Overview</h2>
-        <p>Funnel distribution and time series drilldowns.</p>
+      <div>
+        <h1 className="page-title">Analytics Hub</h1>
+        <p className="page-subtitle">Zeitreihen, Funnel-Verteilung und Markttrends.</p>
       </div>
       <div className="card">
-        <h3>New Ads Time Series</h3>
+        <h2 className="section-title">Marktübersicht</h2>
+        <p className="helper-text">Funnel-Verteilung und Zeitreihen-Drilldowns.</p>
+      </div>
+      <div className="card">
+        <h3 className="section-title">Neue Ads im Zeitverlauf</h3>
         <div style={{ width: '100%', height: 260 }}>
           <ResponsiveContainer>
             <LineChart data={data?.trends || []}>

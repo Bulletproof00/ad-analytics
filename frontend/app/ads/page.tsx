@@ -41,55 +41,59 @@ export default function AdsPage() {
 
   return (
     <div className="grid">
-      <h1>Ads</h1>
+      <div>
+        <h1 className="page-title">Ads Explorer</h1>
+        <p className="page-subtitle">Filtere, vergleiche und öffne einzelne Anzeigen.</p>
+      </div>
       <div className="card">
+        <h2 className="section-title">Filter</h2>
         <div className="filters">
-          <input className="input" placeholder="Search" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input className="input" placeholder="Suche" value={query} onChange={(e) => setQuery(e.target.value)} />
           <input
             className="input"
             type="number"
             min={0}
             max={100}
-            placeholder="Min Score"
+            placeholder="Min. Score"
             value={minScore}
             onChange={(e) => setMinScore(Number(e.target.value))}
           />
           <select className="select" value={funnelType} onChange={(e) => setFunnelType(e.target.value)}>
-            <option value="">Funnel Type</option>
+            <option value="">Funnel-Typ</option>
             <option value="whatsapp">WhatsApp</option>
             <option value="instant_form">Instant Form</option>
-            <option value="landing_page">Landing Page</option>
-            <option value="unknown">Unknown</option>
+            <option value="landing_page">Landingpage</option>
+            <option value="unknown">Unbekannt</option>
           </select>
           <select className="select" value={offerType} onChange={(e) => setOfferType(e.target.value)}>
-            <option value="">Offer Type</option>
-            <option value="price">Price</option>
+            <option value="">Offer-Typ</option>
+            <option value="price">Preis</option>
             <option value="bonus">Bonus</option>
-            <option value="no_waiting">No Waiting</option>
+            <option value="no_waiting">Ohne Wartezeit</option>
             <option value="testsieger">Testsieger</option>
-            <option value="cost_shock">Cost Shock</option>
+            <option value="cost_shock">Kosten-Schock</option>
           </select>
           <select className="select" value={emotionTrigger} onChange={(e) => setEmotionTrigger(e.target.value)}>
-            <option value="">Emotion Trigger</option>
-            <option value="cost_shock">Cost Shock</option>
-            <option value="fear">Fear</option>
-            <option value="care">Care</option>
-            <option value="relief">Relief</option>
+            <option value="">Emotion</option>
+            <option value="cost_shock">Kosten-Schock</option>
+            <option value="fear">Angst</option>
+            <option value="care">Fürsorge</option>
+            <option value="relief">Erleichterung</option>
           </select>
           <select className="select" value={niche} onChange={(e) => setNiche(e.target.value)}>
-            <option value="">Niche</option>
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-            <option value="pet">Pet</option>
+            <option value="">Nische</option>
+            <option value="dog">Hund</option>
+            <option value="cat">Katze</option>
+            <option value="pet">Haustier</option>
             <option value="zahn">Zahn</option>
             <option value="rs">RS</option>
-            <option value="unknown">Unknown</option>
+            <option value="unknown">Unbekannt</option>
           </select>
           <input
             className="input"
             type="number"
             min={0}
-            placeholder="Min Runtime (days)"
+            placeholder="Min. Laufzeit (Tage)"
             value={minRuntime}
             onChange={(e) => setMinRuntime(Number(e.target.value))}
           />
@@ -97,7 +101,7 @@ export default function AdsPage() {
             className="input"
             type="number"
             min={0}
-            placeholder="Min Reuse"
+            placeholder="Min. Reuse"
             value={minReuse}
             onChange={(e) => setMinReuse(Number(e.target.value))}
           />
@@ -105,18 +109,19 @@ export default function AdsPage() {
             className="input"
             type="number"
             min={0}
-            placeholder="Min Variants"
+            placeholder="Min. Varianten"
             value={minVariants}
             onChange={(e) => setMinVariants(Number(e.target.value))}
           />
           <label>
-            <input type="checkbox" checked={winnerOnly} onChange={(e) => setWinnerOnly(e.target.checked)} /> Winner only
+            <input type="checkbox" checked={winnerOnly} onChange={(e) => setWinnerOnly(e.target.checked)} /> Nur Winners
           </label>
         </div>
         <button className="button" style={{ marginTop: 12 }} onClick={load}>Filter anwenden</button>
       </div>
 
       <div className="card">
+        <h2 className="section-title">Ergebnisse</h2>
         <table className="table">
           <thead>
             <tr>
@@ -126,11 +131,11 @@ export default function AdsPage() {
               <th>Stop</th>
               <th>Hook</th>
               <th>Funnel</th>
-              <th>Offer</th>
+              <th>Angebot</th>
               <th>Reuse</th>
-              <th>Variants</th>
+              <th>Varianten</th>
               <th>Snapshot</th>
-              <th>Open</th>
+              <th>Öffnen</th>
             </tr>
           </thead>
           <tbody>
@@ -153,7 +158,7 @@ export default function AdsPage() {
                   )}
                 </td>
                 <td>
-                  <Link href={`/ads/${item.id}`}>Open</Link>
+                  <Link href={`/ads/${item.id}`}>Öffnen</Link>
                 </td>
               </tr>
             ))}

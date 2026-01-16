@@ -32,9 +32,12 @@ export default function SettingsPage() {
 
   return (
     <div className="grid">
-      <h1>Settings</h1>
+      <div>
+        <h1 className="page-title">Einstellungen</h1>
+        <p className="page-subtitle">Systemweite Defaults für Scans, Scores und Regeln.</p>
+      </div>
       <div className="card">
-        <h2>Scanning</h2>
+        <h2 className="section-title">Scanning</h2>
         <textarea
           className="textarea"
           rows={6}
@@ -45,11 +48,11 @@ export default function SettingsPage() {
           })}
         />
         <button className="button" style={{ marginTop: 12 }} onClick={() => saveSection('scanning')} disabled={saving}>
-          Save Scanning
+          Scanning speichern
         </button>
       </div>
       <div className="card">
-        <h2>Scoring</h2>
+        <h2 className="section-title">Scoring</h2>
         <div className="filters">
           <input
             className="input"
@@ -59,7 +62,7 @@ export default function SettingsPage() {
           />
         </div>
         <button className="button" style={{ marginTop: 12 }} onClick={() => saveSection('scoring')} disabled={saving}>
-          Save Scoring
+          Scoring speichern
         </button>
       </div>
     </div>

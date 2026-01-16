@@ -26,16 +26,20 @@ export default function TestQueuePage() {
 
   return (
     <div className="grid">
-      <h1>Test Queue</h1>
+      <div>
+        <h1 className="page-title">Test-Queue</h1>
+        <p className="page-subtitle">Kandidaten für Microtests und Freigaben.</p>
+      </div>
       <div className="card">
+        <h2 className="section-title">Pipeline</h2>
         <table className="table">
           <thead>
             <tr>
-              <th>Title</th>
+              <th>Titel</th>
               <th>Status</th>
-              <th>Predicted Success</th>
+              <th>Erfolgschance</th>
               <th>Budget</th>
-              <th>Risk</th>
+              <th>Risiko</th>
             </tr>
           </thead>
           <tbody>

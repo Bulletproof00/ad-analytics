@@ -19,12 +19,15 @@ export default function IntegrationsPage() {
 
   return (
     <div className="grid">
-      <h1>Integrations</h1>
+      <div>
+        <h1 className="page-title">Integrationen</h1>
+        <p className="page-subtitle">CSV Import und künftige Datenquellen.</p>
+      </div>
       <div className="card">
-        <h2>CSV KPI Import</h2>
+        <h2 className="section-title">CSV KPI Import</h2>
         <textarea className="textarea" rows={6} value={csvText} onChange={(e) => setCsvText(e.target.value)} />
         <input className="input" value={mapping} onChange={(e) => setMapping(e.target.value)} />
-        <button className="button" style={{ marginTop: 12 }} onClick={importCsv}>Import CSV</button>
+        <button className="button" style={{ marginTop: 12 }} onClick={importCsv}>CSV importieren</button>
         {result && <pre>{JSON.stringify(result, null, 2)}</pre>}
       </div>
     </div>

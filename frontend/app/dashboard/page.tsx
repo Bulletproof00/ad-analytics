@@ -46,10 +46,10 @@ export default function DashboardPage() {
 
   return (
     <div className="grid">
-      <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="card toolbar">
         <div>
-          <h1 style={{ marginBottom: 4 }}>Command Center</h1>
-          <p style={{ color: '#6b7280' }}>Meta Ads Marktgedächtnis für DE</p>
+          <h1 className="page-title">Kommandozentrale</h1>
+          <p className="page-subtitle">Meta Ads Marktgedächtnis für Deutschland</p>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <select className="select" value={range} onChange={(e) => setRange(Number(e.target.value))}>
@@ -59,24 +59,24 @@ export default function DashboardPage() {
             <option value={90}>90d</option>
             <option value={365}>365d</option>
           </select>
-          <Link className="button" href="/scan">Run Scan</Link>
+          <Link className="button" href="/scan">Scan starten</Link>
         </div>
       </div>
 
       <div className="grid grid-2">
-        <KpiCard title="Total Ads" value={overview?.kpis.total_ads ?? '-'} delta="+3%" />
-        <KpiCard title="New Ads" value={overview?.kpis.new_ads ?? '-'} delta="+5%" />
-        <KpiCard title="Active Ads" value={overview?.kpis.active_ads ?? '-'} delta="+1%" />
-        <KpiCard title="Unique Pages" value={overview?.kpis.total_pages ?? '-'} />
-        <KpiCard title="Winners" value={overview?.kpis.winners ?? '-'} />
-        <KpiCard title="Market Velocity" value={overview?.kpis.market_velocity ?? '-'} />
-        <KpiCard title="Saturation Avg" value={overview?.kpis.saturation_avg ?? '-'} />
-        <KpiCard title="Coverage Health" value={overview?.kpis.coverage_health ?? '-'} />
+        <KpiCard title="Gesamt Ads" value={overview?.kpis.total_ads ?? '-'} delta="+3%" />
+        <KpiCard title="Neue Ads" value={overview?.kpis.new_ads ?? '-'} delta="+5%" />
+        <KpiCard title="Aktive Ads" value={overview?.kpis.active_ads ?? '-'} delta="+1%" />
+        <KpiCard title="Pages entdeckt" value={overview?.kpis.total_pages ?? '-'} />
+        <KpiCard title="Gewinner" value={overview?.kpis.winners ?? '-'} />
+        <KpiCard title="Marktgeschwindigkeit" value={overview?.kpis.market_velocity ?? '-'} />
+        <KpiCard title="Sättigung Ø" value={overview?.kpis.saturation_avg ?? '-'} />
+        <KpiCard title="Coverage-Health" value={overview?.kpis.coverage_health ?? '-'} />
       </div>
 
       <div className="grid grid-2">
         <div className="card">
-          <h2>New Ads Trend</h2>
+          <h2 className="section-title">Neue Ads im Zeitverlauf</h2>
           <div style={{ width: '100%', height: 240 }}>
             <ResponsiveContainer>
               <LineChart data={trendData}>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="card">
-          <h2>Funnel Share</h2>
+          <h2 className="section-title">Funnel-Verteilung</h2>
           <div style={{ width: '100%', height: 240 }}>
             <ResponsiveContainer>
               <PieChart>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-2">
         <div className="card">
-          <h2>What Changed</h2>
+          <h2 className="section-title">Was sich verändert hat</h2>
           <ul>
             {overview?.top_hooks.map((hook) => (
               <li key={hook.hook_hash} style={{ marginBottom: 8 }}>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
           </ul>
         </div>
         <div className="card">
-          <h2>Alerts</h2>
+          <h2 className="section-title">Alerts</h2>
           <ul>
             {overview?.alerts.map((alert) => (
               <li key={alert.id} style={{ marginBottom: 8 }}>
@@ -125,15 +125,15 @@ export default function DashboardPage() {
                 <p style={{ margin: 0, color: '#6b7280' }}>{alert.message}</p>
               </li>
             ))}
-            {!overview?.alerts.length && <p>No open alerts.</p>}
+            {!overview?.alerts.length && <p className="helper-text">Keine offenen Alerts.</p>}
           </ul>
         </div>
       </div>
 
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Top Winners</h2>
-          <Link className="button" href="/ads">Open Ads Explorer</Link>
+        <div className="toolbar">
+          <h2 className="section-title">Top Gewinner</h2>
+          <Link className="button" href="/ads">Zum Ads Explorer</Link>
         </div>
         <table className="table">
           <thead>
@@ -143,8 +143,8 @@ export default function DashboardPage() {
               <th>Hook</th>
               <th>Funnel</th>
               <th>Reuse</th>
-              <th>Variants</th>
-              <th>Open</th>
+              <th>Varianten</th>
+              <th>Öffnen</th>
             </tr>
           </thead>
           <tbody>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
                 <td>{item.score_reuse}</td>
                 <td>{item.score_variants}</td>
                 <td>
-                  <Link href={`/ads/${item.id}`}>Open</Link>
+                  <Link href={`/ads/${item.id}`}>Öffnen</Link>
                 </td>
               </tr>
             ))}

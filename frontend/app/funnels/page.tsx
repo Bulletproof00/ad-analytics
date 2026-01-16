@@ -21,13 +21,17 @@ export default function FunnelsPage() {
 
   return (
     <div className="grid">
-      <h1>Funnel Library</h1>
+      <div>
+        <h1 className="page-title">Funnel-Bibliothek</h1>
+        <p className="page-subtitle">Übersicht der Funnel-Typen im Markt.</p>
+      </div>
       <div className="card">
+        <h2 className="section-title">Funnel Übersicht</h2>
         <table className="table">
           <thead>
             <tr>
-              <th>Funnel Type</th>
-              <th>Count</th>
+              <th>Funnel-Typ</th>
+              <th>Anzahl</th>
             </tr>
           </thead>
           <tbody>

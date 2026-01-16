@@ -50,8 +50,12 @@ export default function ScanPage() {
 
   return (
     <div className="grid">
-      <h1>Neuer Scan</h1>
+      <div>
+        <h1 className="page-title">Neuer Scan</h1>
+        <p className="page-subtitle">Starte Keyword-Cluster Scans für neue Marktsignale.</p>
+      </div>
       <div className="card">
+        <h2 className="section-title">Keywords</h2>
         <label>Keywords (1 pro Zeile)</label>
         <textarea
           className="textarea"
@@ -61,7 +65,7 @@ export default function ScanPage() {
         />
         <div className="filters" style={{ marginTop: 12 }}>
           <div>
-            <label>Since Days</label>
+            <label>Zeitraum (Tage)</label>
             <select className="select" value={sinceDays} onChange={(e) => setSinceDays(Number(e.target.value))}>
               <option value={30}>30</option>
               <option value={90}>90</option>
@@ -71,9 +75,9 @@ export default function ScanPage() {
           <div>
             <label>Status</label>
             <select className="select" value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="ALL">ALL</option>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="INACTIVE">INACTIVE</option>
+              <option value="ALL">Alle</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="INACTIVE">Inaktiv</option>
             </select>
           </div>
         </div>
@@ -84,14 +88,14 @@ export default function ScanPage() {
 
       {scanState && (
         <div className="card">
-          <h2>Scan Status</h2>
+          <h2 className="section-title">Scan Status</h2>
           <p>Status: {scanState.state}</p>
           <p>Keywords: {scanState.keywords_done} / {scanState.keywords_total}</p>
-          <p>Ads upserted: {scanState.ads_upserted}</p>
-          <p>Pages discovered: {scanState.pages_discovered}</p>
+          <p>Ads aktualisiert: {scanState.ads_upserted}</p>
+          <p>Pages entdeckt: {scanState.pages_discovered}</p>
           {scanState.errors.length > 0 && (
             <div>
-              <h4>Errors</h4>
+              <h4>Fehler</h4>
               <ul>
                 {scanState.errors.map((err) => (
                   <li key={err}>{err}</li>

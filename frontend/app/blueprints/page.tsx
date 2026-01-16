@@ -33,16 +33,20 @@ export default function BlueprintsPage() {
 
   return (
     <div className="grid">
-      <h1>Blueprint Library</h1>
+      <div>
+        <h1 className="page-title">Blueprint-Bibliothek</h1>
+        <p className="page-subtitle">Filtere und exportiere wiederverwendbare Kampagnenpläne.</p>
+      </div>
       <div className="card">
+        <h2 className="section-title">Filter</h2>
         <div className="filters">
-          <input className="input" placeholder="Industry" value={industry} onChange={(e) => setIndustry(e.target.value)} />
+          <input className="input" placeholder="Branche" value={industry} onChange={(e) => setIndustry(e.target.value)} />
           <select className="select" value={destination} onChange={(e) => setDestination(e.target.value)}>
-            <option value="">Destination</option>
+            <option value="">Zieltyp</option>
             <option value="whatsapp">WhatsApp</option>
-            <option value="meta_lead_form">Lead Form</option>
-            <option value="calculator_quiz">Calculator/Quiz</option>
-            <option value="landing_page">Landing Page</option>
+            <option value="meta_lead_form">Lead-Formular</option>
+            <option value="calculator_quiz">Rechner/Quiz</option>
+            <option value="landing_page">Landingpage</option>
           </select>
           <input
             className="input"
@@ -52,16 +56,17 @@ export default function BlueprintsPage() {
             onChange={(e) => setMinScore(Number(e.target.value))}
           />
         </div>
-        <button className="button" style={{ marginTop: 12 }} onClick={load}>Apply Filters</button>
+        <button className="button" style={{ marginTop: 12 }} onClick={load}>Filter anwenden</button>
       </div>
       <div className="card">
+        <h2 className="section-title">Blueprints</h2>
         <table className="table">
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Industry</th>
-              <th>Destination</th>
-              <th>Scaling Score</th>
+              <th>Titel</th>
+              <th>Branche</th>
+              <th>Zieltyp</th>
+              <th>Scaling-Score</th>
               <th>Export</th>
             </tr>
           </thead>

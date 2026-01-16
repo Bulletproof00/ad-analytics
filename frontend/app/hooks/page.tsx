@@ -26,28 +26,32 @@ export default function HooksPage() {
 
   return (
     <div className="grid">
-      <h1>Hooks</h1>
+      <div>
+        <h1 className="page-title">Hook Library</h1>
+        <p className="page-subtitle">Die stärksten Einstiege und ihre Wiederverwendung.</p>
+      </div>
       {compareHooks.length > 0 && (
         <div className="card">
-          <h2>Compare Hooks</h2>
+          <h2 className="section-title">Hook Vergleich</h2>
           <ul>
             {compareHooks.map((hook) => (
               <li key={hook.id}>
-                <strong>{hook.hook_text}</strong> — reuse {hook.reuse_count}
+                <strong>{hook.hook_text}</strong> — Reuse {hook.reuse_count}
               </li>
             ))}
           </ul>
         </div>
       )}
       <div className="card">
+        <h2 className="section-title">Alle Hooks</h2>
         <table className="table">
           <thead>
             <tr>
               <th>Hook</th>
               <th>Reuse</th>
               <th>Beispiele</th>
-              <th>Copy</th>
-              <th>Compare</th>
+              <th>Kopie</th>
+              <th>Vergleich</th>
             </tr>
           </thead>
           <tbody>

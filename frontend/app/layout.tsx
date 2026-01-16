@@ -14,18 +14,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             <strong>AdRadar</strong>
             <nav style={{ display: 'flex', gap: 12 }}>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/dashboard">Übersicht</Link>
               <Link href="/scan">Scan</Link>
               <Link href="/ads">Ads</Link>
               <Link href="/hooks">Hooks</Link>
               <Link href="/funnels">Funnels</Link>
               <Link href="/blueprints">Blueprints</Link>
               <Link href="/analytics">Analytics</Link>
-              <Link href="/agents">Agents</Link>
-              <Link href="/test-queue">Test Queue</Link>
+              <Link href="/agents">Agenten</Link>
+              <Link href="/test-queue">Test-Queue</Link>
               <Link href="/export">Export</Link>
-              <Link href="/integrations">Integrations</Link>
-              <Link href="/settings">Settings</Link>
+              <Link href="/integrations">Integrationen</Link>
+              <Link href="/settings">Einstellungen</Link>
             </nav>
           </div>
         </header>

@@ -34,28 +34,31 @@ export default function AgentsPage() {
 
   return (
     <div className="grid">
-      <h1>Agents Center</h1>
-      <div className="card">
-        <h2>Run Agent</h2>
-        <select className="select" value={agentName} onChange={(e) => setAgentName(e.target.value)}>
-          <option value="market_pattern">Market Pattern</option>
-          <option value="hook_generator">Hook Generator</option>
-          <option value="winner_prediction">Winner Prediction</option>
-          <option value="strategy_budget">Strategy & Budget</option>
-          <option value="explainability">Explainability</option>
-          <option value="market_saturation">Market Saturation</option>
-          <option value="differentiation">Differentiation</option>
-        </select>
-        <button className="button" style={{ marginTop: 12 }} onClick={runAgent}>Run Agent</button>
+      <div>
+        <h1 className="page-title">Agenten Center</h1>
+        <p className="page-subtitle">Regelbasierte Reports und Outputs für Entscheidungen.</p>
       </div>
       <div className="card">
-        <h2>Agent Runs</h2>
+        <h2 className="section-title">Agent ausführen</h2>
+        <select className="select" value={agentName} onChange={(e) => setAgentName(e.target.value)}>
+          <option value="market_pattern">Markt-Muster</option>
+          <option value="hook_generator">Hook Generator</option>
+          <option value="winner_prediction">Winner Prognose</option>
+          <option value="strategy_budget">Strategie & Budget</option>
+          <option value="explainability">Erklärbarkeit</option>
+          <option value="market_saturation">Marktsättigung</option>
+          <option value="differentiation">Differenzierung</option>
+        </select>
+        <button className="button" style={{ marginTop: 12 }} onClick={runAgent}>Agent starten</button>
+      </div>
+      <div className="card">
+        <h2 className="section-title">Letzte Agenten-Runs</h2>
         <table className="table">
           <thead>
             <tr>
               <th>Agent</th>
               <th>Status</th>
-              <th>Created</th>
+              <th>Erstellt</th>
             </tr>
           </thead>
           <tbody>
